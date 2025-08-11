@@ -1,0 +1,104 @@
+@theme "global-config.rasi"
+
+configuration {
+    show-icons: false;
+}
+
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       350px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+    
+    enabled:                     true;
+    border-radius:               20px;
+    cursor:                      "default";
+    background-color:            @background;
+    border:                      1px;
+    border-color:                @border-color;
+    
+}
+
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    padding:                     5px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "listbox" ];
+}
+
+listbox {
+    spacing:                     10px;
+    padding:                     0px 15px;
+    margin: 			 5px 0 15px 0;
+    orientation:                 vertical;
+    background-color:            transparent;
+    children:                    [ "message", "listview" ];
+}
+
+message {
+    background-color:            transparent;
+    margin:                      0;
+}
+
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:			 2;
+    cycle:                       false;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    spacing:                     8px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      "default";
+}
+
+element {
+    enabled:                     true;
+    padding:                     12px 20px;
+    border-radius:               10px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      pointer;
+}
+
+element normal.normal {
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+
+element alternate.normal {
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+
+element selected.normal {
+    background-color:            @selected;
+    text-color:                  @text-selected;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    font:                        inherit;
+}
+
+textbox {
+    padding:                     12px 20px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+}

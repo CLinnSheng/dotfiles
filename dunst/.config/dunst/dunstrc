@@ -1,0 +1,89 @@
+[global]
+    # Display
+    monitor = 0
+    follow = mouse
+    width = 350
+    origin = top-right
+    offset = (12, 15)
+    
+    # Progress bar
+    progress_bar = true
+    progress_bar_height = 10
+    progress_bar_frame_width = 1
+    progress_bar_min_width = 150
+    progress_bar_max_width = 400
+    progress_bar_corner_radius = 5
+    
+    # Appearance
+    indicate_hidden = yes
+    shrink = no
+    separator_height = 2
+    separator_color = "#11111b"
+    padding = 15
+    horizontal_padding = 15
+    frame_width = 0
+    corner_radius = 10
+	transparency = 20
+    
+    # Behavior
+    sort = yes
+    idle_threshold = 120
+    
+    # Text formatting
+    font = SF Pro Display 12
+    line_height = 0
+    markup = full
+    format = "<span weight='bold' font='12'>%s</span>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    word_wrap = yes
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+    
+    # Icons
+    icon_position = left
+    min_icon_size = 50
+    max_icon_size = 60
+    # Remove custom icon_path unless you have custom icons
+    # icon_path = $HOME/.local/share/icons/dunst
+    
+    # History
+    sticky_history = yes
+    history_length = 20
+    always_run_script = true
+    
+    # Window properties
+    title = Dunst
+    class = Dunst
+    
+    # Wayland/X11 settings - simplified for Hyprland
+    ignore_dbusclose = false
+    
+    # Mouse actions
+    mouse_left_click = do_action, close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[urgency_low]
+    background = "#181825"
+    foreground = "#CDD6F4"
+    highlight = "#CDD6F4"
+    frame_color = "#181825"
+    timeout = 5
+
+[urgency_normal]
+    background = "#181825"
+    foreground = "#CDD6F4"
+    highlight = "#CDD6F4"
+    frame_color = "#181825"
+    timeout = 5
+
+[urgency_critical]
+    background = "#181825"
+    foreground = "#CDD6F4"
+    frame_color = "#f38ba8"
+    timeout = 0  # 0 = no timeout for critical notifications

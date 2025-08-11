@@ -1,0 +1,92 @@
+@theme "launcher-theme"
+
+configuration {
+	// Turn on in modes if want
+	modes: "drun,filebrowser";
+	filter: "";
+	terminal: "alacritty";
+
+	case-sensitive: false;
+	normalize-match: true;
+	matching: "fuzzy";
+
+	show-icons: true;
+	scroll-method: 1;
+
+	icon-theme: "Papirus";
+
+	/* Fallback Icon */
+	run, drun {
+		fallback-icon: "application-x-addon";
+	}
+
+	/* Other Settings */
+	timeout {
+     		action: "kb-cancel";
+      	delay:  10;
+  	}
+
+	/* Window Settings */
+	display-window: "Windows";
+	window-match-fields: "title,class,role,name,desktop";
+	// Changing this format in the future
+	window-format: "{w} · {c} · {t:0}";
+
+	/* SSH Settings */
+	display-ssh: "SSH";
+	parse-hosts: true;
+	
+	/* File Browser Settings */
+	display-filebrowser: "";
+	filebrowser {
+		directory: "{$HOME}";
+      		directories-first: true;
+      		sorting-method:    "name";
+  	}
+	
+
+	/* Run Settings */
+	display-run: "Run";
+
+	/* Drun Settings */
+	display-drun: "󱓟";
+	drun-display-format: "{icon} {name}";
+
+	/* Key Bindings */
+	kb-primary-paste: "Control+V,Shift+Insert";
+	kb-secondary-paste: "Control+v,Insert";
+	kb-secondary-copy: "Control+c";
+
+	kb-cancel: "Escape,MouseSecondary,Control+g,Control+bracketleft";
+	kb-clear-line: "Control+d";
+	kb-remove-to-eol: "Control+D";
+	kb-remove-char-forward: "Delete";
+	kb-remove-char-back: "BackSpace";
+
+	kb-move-word-back: "Control+b,Control+Left";
+	kb-move-char-back: "Left";
+	kb-move-word-forward: "Control+w";
+	kb-move-char-forward: "Right,Control+f";
+
+	kb-accept-entry: "Return,KP_Enter";
+	kb-row-left: "Control+Page_Up";
+	kb-row-right: "Control+Page_Down";
+	kb-row-up: "Up,Control+k,Control+p";
+	kb-row-down: "Down,Control+j,Control+n";
+
+	kb-mode-next: "Shift+Right,Control+Tab,Control+l";
+	kb-mode-previous: "Shift+Left,Control+ISO_Left_Tab,Control+h";
+	kb-mode-complete: "";
+	
+	kb-select-1: "Control+1";
+	kb-select-2: "Control+2";
+	kb-select-3: "Control+3";
+	kb-select-4: "Control+4";
+	kb-select-5: "Control+5";
+	kb-select-6: "Control+6";
+	kb-select-7: "Control+7";
+	kb-select-8: "Control+8";
+	kb-select-9: "Control+9";
+	kb-select-10: "Control+0";
+}
+

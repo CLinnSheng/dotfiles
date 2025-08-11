@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+
+
+# ----------------------------------------------------- 
+# Define threshholds for color indicators
+# ----------------------------------------------------- 
+threshhold_green=0
+threshhold_yellow=25
+threshhold_red=100
+
+# ----------------------------------------------------- 
+# Check for updates
+# ----------------------------------------------------- 
+updates=$(yay -Pu 2>/dev/null | wc -l)
+
+# ----------------------------------------------------- 
+# Output in JSON format for Waybar Module custom-updates
+# ----------------------------------------------------- 
+
+css_class="green"
+
+if [ "$updates" -gt "$threshhold_red" ]; then
+    css_class="red"
+elif [ "$updates" -gt "$threshhold_yellow" ]; then
+    css_class="yellow"
+fi
+
+if [ "$updates" -gt 0 ]; then
+    # If there are updates, display the count and determined class
+    printf '{"text": "%s", "alt": "%s", "tooltip": "Click to update your system", "class": "%s"}' "$updates" "$updates" "$css_class"
+else
+    # If no updates, display 0 and explicitly set class to green (though it would already be green)
+    printf '{"text": "0", "alt": "0", "tooltip": "No updates available", "class": "green"}'
+fi

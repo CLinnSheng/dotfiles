@@ -1,0 +1,41 @@
+[general]
+	live_config_reload = true
+	import = ["~/.config/alacritty/themes/tomorrow_night_bright.toml"]
+
+[env]
+	TERM = "xterm-256color"
+
+[window]
+	padding = { x = 10, y = 10 }
+	opacity = 0.8
+	blur = true
+	dynamic_padding = false
+	class = { instance = "Alacritty", general = "Alacritty" }
+
+[font]
+	size = 13
+	normal = { family = "FiraCode Nerd Font Mono", style = "Medium" }
+	bold = { family = "FiraCode Nerd Font Mono", style = "Bold" }
+
+[cursor] 
+	style = { shape = "block", blinking = "Always" }
+	vi_mode_style = { shape = "block", blinking = "Always" }
+
+[selection]
+	save_to_clipboard = false
+
+[terminal]
+	shell = "/usr/bin/bash"
+
+[mouse]
+	hide_when_typing = true
+
+# [[keyboard.bindings]]
+# action = "ToggleViMode"
+# key = "Space"
+# mods = "Control"
+#
+# [[keyboard.bindings]]
+# action = "Paste"
+# key = "p"
+# mode = "Vi"

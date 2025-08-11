@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+# Get saved connections
+saved_connections=$(nmcli -g NAME connection)
+
+# Get a list of available Wi-Fi connections
+wifi_list=$(nmcli --fields "SECURITY,SSID,RATE" device wifi list \
+        | sed 1d \
+        | sed 's/  */ /g' \
+        | sed -E "s/WPA*.?\S/ /g" \
+        | sed "s/^--/ /g" \
+        | sed "s/  //g" \
+        | sed "/--/d" \
+        | sed -E 's/([0-9.]+)[[:space:]]*([KMG])bit\/s/\1\2bit\/s/g' \
+        | while read -r line; do
+        ssid=$(echo "$line" | awk '{print $2}') # Extract SSID (second field)
+        if [[ "$saved_connections" =~ (^|[[:space:]])"$ssid"($|[[:space:]]) ]]; then
+            # For saved networks, remove any lock icon and add unlock icon
+            echo "$line 📶"
+        else
+            # For unsaved networks, keep lock icon (if present) or no icon
+            echo "$line"
+        fi
+done)
+
+# Check if Wi-Fi is enabled or disabled
+connected=$(nmcli -fields WIFI g)
+if [[ "$connected" =~ "enabled" ]]; then
+    toggle="󰖪  Disable Wi-Fi"
+elif [[ "$connected" =~ "disabled" ]]; then
+    toggle="󰖩  Enable Wi-Fi"
+fi
+
+# Use rofi to select Wi-Fi network
+chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -theme "$HOME/.config/rofi/wifi-menu.rasi")
+
+# Exit if no network is chosen
+[ -z "$chosen_network" ] && exit
+
+# Handle toggle options
+if [ "$chosen_network" = "󰖩  Enable Wi-Fi" ]; then
+    nmcli radio wifi on
+    exit
+elif [ "$chosen_network" = "󰖪  Disable Wi-Fi" ]; then
+    nmcli radio wifi off
+    exit
+fi
+
+# Extract SSID from chosen_network (removing icons and speed)
+chosen_id=$(echo "$chosen_network" | sed 's/^[🔓 ]*//' | sed 's/ 📶$//' | awk '{print $1}')
+
+echo $chosen_id
+# Message to show when connection is activated successfully
+success_message="Connected to \"$chosen_id\""
+
+# Check if the chosen SSID is in saved connections
+if [[ "$saved_connections" =~ (^|[[:space:]])"$chosen_id"($|[[:space:]]) ]]; then
+    nmcli connection up id "$chosen_id" | grep "successfully" && notify-send "Connection Established" "$success_message"
+else
+    # Prompt for password if the network is secured (has lock icon in original nmcli output)
+    if [[ "$chosen_network" =~ "" ]]; then
+        wifi_password=$(rofi -dmenu -password -mesg "$chosen_id" -theme "$HOME/.config/rofi/wifi-password.rasi")
+        [ -z "$wifi_password" ] && exit # Exit if no password provided
+        nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "successfully" && notify-send "Connection Established" "$success_message"
+    else
+        nmcli device wifi connect "$chosen_id" | grep "successfully" && notify-send "Connection Established" "$success_message"
+    fi
+fi

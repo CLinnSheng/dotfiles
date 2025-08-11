@@ -1,0 +1,147 @@
+@theme "global-config.rasi"
+
+configuration {
+    show-icons: 		 false;
+    matching: 			 "fuzzy";
+    normalize-match:     true;
+    case-sensitive:		 false;
+}
+
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       700px;
+    x-offset:                    0px;
+    y-offset:                    0px;
+    
+    enabled:                     true;
+    border-radius:               20px;
+    cursor:                      "default";
+    background-color:            @background;
+    border:                      1px;
+    border-color:                @border-color;
+    
+}
+
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    padding:                     5px;
+    background-color:            transparent;
+    orientation:                 vertical;
+    children:                    [ "inputbar", "listbox" ];
+}
+
+inputbar {
+    enabled:                     true;
+    spacing:                     0;
+    padding:                     0 15px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    orientation:                 horizontal;
+    children:                    [ "icon-search", "entry" ];
+}
+
+icon-search {
+    expand: 			 false;
+    margin:			 0 0 0 18px;
+    background-color:		 transparent;
+    filename:			 "next";
+}
+
+listbox {
+    spacing:                     10px;
+    padding:                     0px 15px;
+    margin: 			 5px 0 15px 0;
+    orientation:                 vertical;
+    background-color:            transparent;
+    children:                    [ "listview" ];
+}
+
+entry {
+    enabled:                     true;
+    expand:                      true;
+    padding:			 12px 10px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      text;
+    placeholder:                 "";
+    placeholder-color:           rgba(255, 255, 255, 0.5);
+}
+
+
+message {
+    background-color:            transparent;
+    margin:                      0;
+}
+
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:			             4;
+    cycle:                       false;
+    dynamic:                     true;
+    scrollbar:                   true;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                true;
+    fixed-columns:               true;
+    spacing:                     8px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      "default";
+}
+
+scrollbar {
+    handle-width:		        5px;
+    background-color:           transparent;
+    border-color:               transparent;
+    handle-color:               @selected;
+    handle-rounded-corners:	    true;
+}
+
+element {
+    enabled:                     true;
+    padding:                     12px 20px;
+    border-radius:               10px;
+    background-color:            transparent;
+    text-color:                  @foreground;
+    cursor:                      pointer;
+}
+
+element normal.normal {
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+
+element alternate.normal {
+    background-color:            transparent;
+    text-color:                  @foreground;
+}
+
+element selected.normal {
+    background-color:            @selected;
+    text-color:                  @text-selected;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    cursor:                      inherit;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    font:                        inherit;
+}
+
+textbox {
+    padding:                     12px 20px;
+    border-radius:               10px;
+    background-color:            @background-alt;
+    text-color:                  @foreground;
+    vertical-align:              0.5;
+    horizontal-align:            0.0;
+    border:                      1px;
+    border-color:                @border-color;
+}

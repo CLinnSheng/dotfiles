@@ -1,0 +1,152 @@
+format = """
+$all$character
+"""
+
+[line_break]
+disabled = true
+
+[cmd_duration]
+disabled = true
+
+[username]
+style_user = "green bold"
+style_root = "red bold"
+format = "[$user]($style) "
+disabled = true
+show_always = true
+
+# Replace the "❯" symbol in the prompt with "➜"
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+# [package]
+# disabled = true
+
+[time]
+disabled = true
+format = '[$time]($style)'
+style = "bold cyan"
+
+
+# Adding Battery status to the prompt
+[battery]
+disabled = true
+full_symbol = '🔋'
+charging_symbol = '⚡️'
+discharging_symbol = '💀'
+unknown_symbol = '⚡️'
+empty_symbol = '🪫'
+
+# Force battery to show at all levels (this is key!)
+[[battery.display]]
+threshold = 100
+style = "bold green"
+
+[[battery.display]]
+threshold = 50
+style = "bold yellow"
+
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+
+# configure directory
+[directory]
+read_only = " "
+truncation_length = 10
+truncate_to_repo = true # truncates directory to root folder if in github repo
+style = "bold italic blue"
+
+[git_branch]
+symbol = " "
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+stashed = "[${count}*](green)"
+modified = "[${count}+](yellow)"
+deleted =  "[${count}-](red)"
+conflicted =  "[${count}~](red)"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+untracked = "[${count}?](blue)"
+staged = "[${count}+](green)"
+
+[git_state]
+style =	"bold red"
+format = "[$state( $progress_current/$progress_total) ]($style)"
+rebase = "rebase"
+merge = "merge"
+revert = "revert"
+cherry_pick = "cherry"
+bisect = "bisect"
+am = "am"
+am_or_rebase = "am/rebase"
+
+# [nodejs]
+# # format = "via [ Node.js $version](bold green) "
+# detect_files = ["package.json", ".node-version"]
+# detect_folders = ["node_modules"]
+# detect_extensions = ["js", "mjs", "cjs"]
+
+[java]
+disabled = false
+symbol = "•  "
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[python]
+disabled = false
+pyenv_version_name= false
+python_binary = 'python'
+format = '[${symbol}(\($virtualenv\))]($style)'
+style = "fg:#a48989"
+symbol = "• 󱔎 "
+
+[lua]
+disabled = false
+symbol = "• "
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[nodejs]
+disabled = false
+symbol = "• 󰎙 "
+format = '[${symbol} $version]($style)'
+style = "fg:#a48989"
+detect_files = ["package.json", ".node-version"]
+detect_folders = ["node_modules"]
+detect_extensions = ["js", "mjs", "cjs"]
+
+[package]
+disabled = false
+symbol = "•  "
+display_private = false
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[docker_context]
+disabled = false
+symbol = "•  "
+only_with_files = true
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[golang]
+disabled = false
+symbol = "•  "
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[cpp]
+disabled = false
+symbol = "•  "
+format = '[${symbol}]($style)'
+style = "fg:#a48989"
+
+[rust]
+disabled = false
+symbol = "•  "
+format = '[${symbol}]($style)'
+style = "fg:#a48989"

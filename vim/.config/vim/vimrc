@@ -1,0 +1,15 @@
+set number
+set relativenumber
+
+syntax on
+
+set laststatus=2
+
+set clipboard=unnamedplus
+
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set softtabstop=2
+
+set smartindent
