@@ -44,12 +44,12 @@ Item {
     }
 
     readonly property color progressColor: {
-        if (isLow && !isCharging) {
+        if (isFullyCharged || isPluggedIn || isCharging) {
+            return "light green";
+        } else if (isLow) {
             return "red";
-        } else if (isFullyCharged || isCharging || isPluggedIn) {
-            return "light green"; // Green for charging
         } else {
-            return "dark orange"; // Orange for normal usage
+            return "dark orange";
         }
     }
 
