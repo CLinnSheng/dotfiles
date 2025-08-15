@@ -1,0 +1,360 @@
+#!/usr/bin/env bash
+
+# Script to find the best display option for each monitor for Hyprland using hyprctl
+# Author: [Your Name]
+# Version: 2.0
+
+set -euo pipefail
+
+# Configuration
+readonly CONF_FILE="$HOME/.config/hypr/monitors.conf"
+readonly WORKSPACE_FILE="$HOME/.config/hypr/workspaces.conf"
+readonly LAPTOP_DISPLAY="eDP-1"
+
+# Colors for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m'
+
+# Global variables
+monitors_json=""
+monitors_final_json=""
+
+# Logging functions
+log() { echo -e "${BLUE}[INFO]${NC} $*"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $*"; }
+warn() { echo -e "${YELLOW}[WARNING]${NC} $*"; }
+error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+
+# Check dependencies and environment
+check_dependencies() {
+    local missing_deps=()
+
+    # Check if Hyprland is running
+    if ! pgrep -x "Hyprland" > /dev/null; then
+        error "Hyprland is not running!"
+        return 1
+    fi
+
+    # Check required commands
+    for cmd in hyprctl jq; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        error "Missing required dependencies: ${missing_deps[*]}"
+        error "Please install missing packages and try again."
+        return 1
+    fi
+
+    return 0
+}
+
+# Get and process monitor information
+get_monitor_data() {
+    log "Scanning available monitors..."
+
+    # Get monitor data from hyprctl
+    monitors_json=$(hyprctl monitors -j)
+
+    if [[ -z "$monitors_json" || "$monitors_json" == "[]" ]]; then
+        error "No monitors found."
+        return 1
+    fi
+
+    process_monitors
+    return 0
+}
+
+# Process monitors to find best modes
+process_monitors() {
+    local monitors_output="[]"
+    local monitor_names
+
+    monitor_names=$(echo "$monitors_json" | jq -r '.[].name')
+
+    while IFS= read -r monitor_name; do
+        [[ -z "$monitor_name" ]] && continue
+
+        local available_modes best_mode monitor_obj
+
+        # Get available modes for this monitor
+        available_modes=$(echo "$monitors_json" | jq -r \
+                --arg monitor "$monitor_name" \
+            '.[] | select(.name == $monitor) | .availableModes[]')
+
+        [[ -z "$available_modes" ]] && continue
+
+        # Find the best mode (highest resolution, then highest refresh rate)
+        best_mode=$(find_best_mode "$available_modes")
+
+        # Create monitor object
+        monitor_obj=$(jq -n \
+                --arg name "$monitor_name" \
+                --arg description "$(get_monitor_description "$monitor_name")" \
+                --arg best_mode "$best_mode" \
+            '{name: $name, description: $description, best_mode: $best_mode}')
+
+        # Add to output array
+        monitors_output=$(echo "$monitors_output" | jq ". += [$monitor_obj]")
+
+    done <<< "$monitor_names"
+
+    monitors_final_json="$monitors_output"
+}
+
+# Find the best display mode for a monitor
+find_best_mode() {
+    local available_modes="$1"
+    local best_mode="" best_resolution="" highest_refresh=0
+    local current_res_score=0 best_res_score=0
+
+    # First pass: find highest resolution
+    while IFS= read -r mode; do
+        [[ -z "$mode" ]] && continue
+
+        local resolution width height res_score
+        resolution=$(echo "$mode" | cut -d'@' -f1)
+        width=$(echo "$resolution" | cut -d'x' -f1)
+        height=$(echo "$resolution" | cut -d'x' -f2)
+        res_score=$((width * height))
+
+        if ((res_score > best_res_score)); then
+            best_res_score=$res_score
+            best_resolution="$resolution"
+        fi
+    done <<< "$available_modes"
+
+    # Second pass: find highest refresh rate for best resolution
+    while IFS= read -r mode; do
+        [[ -z "$mode" ]] && continue
+
+        local resolution refresh_rate
+        resolution=$(echo "$mode" | cut -d'@' -f1)
+
+        if [[ "$resolution" == "$best_resolution" ]]; then
+            refresh_rate=$(echo "$mode" | grep -o '@[0-9.]*Hz' | sed 's/@\|Hz//g' | cut -d'.' -f1)
+
+            if ((refresh_rate > highest_refresh)); then
+                highest_refresh=$refresh_rate
+                best_mode="$mode"
+            fi
+        fi
+    done <<< "$available_modes"
+
+    # Remove "Hz" suffix for Hyprland config
+    echo "$best_mode" | sed 's/Hz//'
+}
+
+# Get monitor description by name
+get_monitor_description() {
+    local monitor_name="$1"
+    echo "$monitors_json" | jq -r \
+        --arg monitor "$monitor_name" \
+        '.[] | select(.name==$monitor) | .description'
+}
+
+# Get monitor mode by name
+get_monitor_mode() {
+    local monitor_name="$1"
+    echo "$monitors_final_json" | jq -r \
+        --arg name "$monitor_name" \
+        '.[] | select(.name==$name) | .best_mode'
+}
+
+# Get monitor by description pattern
+get_monitor_by_pattern() {
+    local pattern="$1"
+    echo "$monitors_final_json" | jq -r \
+        --arg pattern "$pattern" \
+        '.[] | select(.description | test($pattern)) | .name' | head -n1
+}
+
+# Write monitor configuration to file
+write_monitor_config() {
+    local setup_name="$1"
+    shift
+    local monitor_configs=("$@")
+
+    echo "TESTING"
+    {
+        echo "# $setup_name"
+        printf '%s\n' "${monitor_configs[@]}"
+    } > "$CONF_FILE"
+
+    success "Monitor configuration written to $CONF_FILE"
+}
+
+# Assign workspaces to monitors
+assign_workspaces() {
+    local monitors=("$@")
+    local ws_start=1
+
+    {
+        echo "# Workspaces for current setup"
+        for monitor in "${monitors[@]}"; do
+            [[ -z "$monitor" ]] && continue
+            for i in {0..2}; do
+                echo "workspace = $((ws_start + i)), monitor:$monitor"
+            done
+            ws_start=$((ws_start + 3))
+        done
+    } > "$WORKSPACE_FILE"
+
+    success "Workspaces assigned and written to $WORKSPACE_FILE"
+}
+
+# Setup configurations
+setup_home_single() {
+    log "Configuring Home Setup - Single Monitor..."
+
+    local external laptop external_mode laptop_mode
+    local configs=()
+
+    external=$(echo "$monitors_final_json" | jq -r '.[] | select(.name != "'"$LAPTOP_DISPLAY"'") | .name' | head -n1)
+    laptop="$LAPTOP_DISPLAY"
+
+    # External monitor on top
+    if [[ -n "$external" ]]; then
+        external_mode=$(get_monitor_mode "$external")
+        configs+=("monitor=$external,$external_mode,0x0,1")
+    fi
+
+    # Laptop below
+    laptop_mode=$(get_monitor_mode "$laptop")
+    configs+=("monitor=$laptop,$laptop_mode,0x1080,1")
+
+    write_monitor_config "Home single-monitor setup" "${configs[@]}"
+    assign_workspaces "$external" "$laptop"
+    success "Home Single Setup Complete"
+}
+
+setup_home_dual() {
+    log "Configuring Home Setup - Dual Monitor..."
+
+    local laptop left right left_mode laptop_mode right_mode
+    local configs=()
+
+    laptop="$LAPTOP_DISPLAY"
+    left=$(get_monitor_by_pattern "27")
+    right=$(get_monitor_by_pattern "24")
+
+    # Left 27" monitor
+    if [[ -n "$left" ]]; then
+        left_mode=$(get_monitor_mode "$left")
+        configs+=("monitor=$left,$left_mode,-1920x0,1")
+    fi
+
+    # Laptop in center
+    laptop_mode=$(get_monitor_mode "$laptop")
+    configs+=("monitor=$laptop,$laptop_mode,0x0,1")
+
+    # Right 24" monitor
+    if [[ -n "$right" ]]; then
+        right_mode=$(get_monitor_mode "$right")
+        configs+=("monitor=$right,$right_mode,1920x0,1")
+    fi
+
+    write_monitor_config "Home dual-monitor setup" "${configs[@]}"
+    assign_workspaces "$left" "$laptop" "$right"
+    success "Home Dual Setup Complete"
+}
+
+setup_hostel() {
+    log "Configuring Hostel Setup..."
+
+    local laptop monitor_27 monitor_24 laptop_mode monitor_27_mode monitor_24_mode
+    local configs=()
+
+    laptop="$LAPTOP_DISPLAY"
+    monitor_27=$(get_monitor_by_pattern "27")
+    monitor_24=$(get_monitor_by_pattern "24")
+
+    # 27" monitor (horizontal, center)
+    if [[ -n "$monitor_27" ]]; then
+        monitor_27_mode=$(get_monitor_mode "$monitor_27")
+        configs+=("monitor=$monitor_27,$monitor_27_mode,0x0,1")
+    fi
+
+    # 24" monitor (vertical, left)
+    if [[ -n "$monitor_24" ]]; then
+        monitor_24_mode=$(get_monitor_mode "$monitor_24")
+        configs+=("monitor=$monitor_24,$monitor_24_mode,-1080x0,1,transform,3")
+    fi
+
+    # Laptop (right)
+    laptop_mode=$(get_monitor_mode "$laptop")
+    configs+=("monitor=$laptop,$laptop_mode,1920x0,1")
+
+    write_monitor_config "Hostel 2-monitor setup" "${configs[@]}"
+    assign_workspaces "$monitor_27" "$monitor_24" "$laptop"
+    success "Hostel Setup Complete"
+}
+
+# Display menu and get user choice
+show_menu() {
+    local monitor_descriptions
+
+    echo
+    echo "=========================================="
+    echo "    Hyprland Monitor Configuration"
+    echo "=========================================="
+    echo
+    echo "Available monitors:"
+
+    monitor_descriptions=$(echo "$monitors_final_json" | jq -r '.[].description')
+    while IFS= read -r monitor; do
+        [[ -n "$monitor" ]] && log "$monitor"
+    done <<< "$monitor_descriptions"
+
+    echo
+    echo "Select your setup:"
+    echo "1) Home setup - 1 monitor (external on top, laptop below)"
+    echo "2) Home setup - 2 monitors (2 external + laptop in center)"
+    echo "3) Hostel setup - 2 monitors (24\" vertical left, 27\" center, laptop right)"
+    echo "4) Exit"
+    echo
+
+    # local choice
+    # read -p "Enter your choice (1-4): " choice
+    # echo "$choice"
+}
+
+# Main execution function
+main() {
+    # Check dependencies first
+    check_dependencies || exit 1
+
+    # Get monitor data
+    get_monitor_data || exit 1
+
+    # Show menu and handle user choice
+    while true; do
+        # local choice
+        # choice=$(show_menu)
+        show_menu
+
+        local choice
+        read -p "Enter your choice (1-4): " choice
+
+        case "$choice" in
+            1) setup_home_single; break ;;
+            2) setup_home_dual; break ;;
+            3) setup_hostel; break ;;
+            4) log "Goodbye!"; exit 0 ;;
+            *)
+                error "Invalid option. Please choose 1-4."
+                read -p "Press Enter to continue..." -r
+                ;;
+        esac
+    done
+
+    exit 0
+}
+
+# Script entry point
+main "$@"

@@ -9,6 +9,7 @@
 alias ls='ls --color=auto -alS'
 alias ll='ls --color=auto -alt'
 alias grep='grep --color=auto'
+alias image='nsxiv'
 
 # PATH
 if [ -d "$HOME/bin/" ]
