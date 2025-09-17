@@ -40,8 +40,18 @@ opt.splitbelow = true
 
 opt.updatetime = 50
 opt.hlsearch = true
-opt.cursorline = false -- higligh cursor line
+opt.cursorline = false -- highlight cursor line
 
+-- Neovim default file explorer
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1
+
 vim.g.editorconfig = true
+
+-- Spell Check
+opt.spell = true
+opt.spelllang = { "en_us" }
+
+-- Undercurl
+vim.cmd([[let &t_Cs = "\e[4:3m"]])
+vim.cmd([[let &t_Ce = "\e[4:0m"]])

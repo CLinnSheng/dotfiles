@@ -180,7 +180,6 @@ write_monitor_config() {
     shift
     local monitor_configs=("$@")
 
-    echo "TESTING"
     {
         echo "# $setup_name"
         printf '%s\n' "${monitor_configs[@]}"
@@ -229,7 +228,13 @@ setup_home_single() {
     configs+=("monitor=$laptop,$laptop_mode,0x1080,1")
 
     write_monitor_config "Home single-monitor setup" "${configs[@]}"
-    assign_workspaces "$external" "$laptop"
+    # assign_workspaces "$external" "$laptop"
+    monitors=()
+    [[ -n "$monitor_27" ]] && monitors+=("$monitor_27")
+    [[ -n "$monitor_24" ]] && monitors+=("$monitor_24")
+    [[ -n "$laptop" ]] && monitors+=("$laptop")
+
+    assign_workspaces "${monitors[@]}"
     success "Home Single Setup Complete"
 }
 
@@ -260,7 +265,12 @@ setup_home_dual() {
     fi
 
     write_monitor_config "Home dual-monitor setup" "${configs[@]}"
-    assign_workspaces "$left" "$laptop" "$right"
+    monitors=()
+    [[ -n "$monitor_27" ]] && monitors+=("$monitor_27")
+    [[ -n "$monitor_24" ]] && monitors+=("$monitor_24")
+    [[ -n "$laptop" ]] && monitors+=("$laptop")
+    assign_workspaces "${monitors[@]}"
+    # assign_workspaces "$left" "$laptop" "$right"
     success "Home Dual Setup Complete"
 }
 
@@ -291,7 +301,12 @@ setup_hostel() {
     configs+=("monitor=$laptop,$laptop_mode,1920x0,1")
 
     write_monitor_config "Hostel 2-monitor setup" "${configs[@]}"
-    assign_workspaces "$monitor_27" "$monitor_24" "$laptop"
+    # assign_workspaces "$monitor_27" "$monitor_24" "$laptop"
+    monitors=()
+    [[ -n "$monitor_27" ]] && monitors+=("$monitor_27")
+    [[ -n "$monitor_24" ]] && monitors+=("$monitor_24")
+    [[ -n "$laptop" ]] && monitors+=("$laptop")
+    assign_workspaces "${monitors[@]}"
     success "Hostel Setup Complete"
 }
 
@@ -319,9 +334,6 @@ show_menu() {
     echo "4) Exit"
     echo
 
-    # local choice
-    # read -p "Enter your choice (1-4): " choice
-    # echo "$choice"
 }
 
 # Main execution function
