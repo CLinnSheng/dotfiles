@@ -166,7 +166,6 @@ return {
 				end,
 				desc = "Git Log File",
 			},
-
 			-- Find
 			{
 				"<leader><space>",
@@ -214,7 +213,7 @@ return {
 					Snacks.picker.keymaps()
 				end,
 				desc = "Keymaps",
-			}, -- Fixed: kkymaps -> keymaps
+			},
 			{
 				"<leader>sm",
 				function()

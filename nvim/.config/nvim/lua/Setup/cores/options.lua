@@ -15,7 +15,7 @@ opt.smartindent = true
 opt.breakindent = true
 opt.expandtab = true
 
-opt.wrap = true
+opt.wrap = false
 
 -- Copy to clipboard
 opt.clipboard = "unnamedplus"
@@ -42,9 +42,8 @@ opt.updatetime = 50
 opt.hlsearch = true
 opt.cursorline = false -- highlight cursor line
 
--- Neovim default file explorer
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
+-- Floating window border
+vim.opt.winborder = "rounded"
 
 vim.g.editorconfig = true
 
@@ -55,3 +54,21 @@ opt.spelllang = { "en_us" }
 -- Undercurl
 vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
+
+vim.lsp.set_log_level("error")
+
+-- 🔧 Force all floating preview windows to have rounded borders
+local orig_floating_preview = vim.lsp.util.open_floating_preview
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+	opts = opts or {}
+	opts.border = opts.border or "rounded"
+	return orig_floating_preview(contents, syntax, opts, ...)
+end
+
+-- Finding Files
+-- pt.path:append("**")
+-- opt.wildmenu = true
+
+vim.g.dbs = {
+	{ name = "PerryTech_Dev", url = "mysql://linnsheng:2KZFwWawGYZO4Rnb@3.114.154.135:3306/" },
+}

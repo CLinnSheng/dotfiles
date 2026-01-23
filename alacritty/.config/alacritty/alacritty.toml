@@ -17,7 +17,7 @@
 	normal = { family = "FiraCode Nerd Font Mono", style = "Medium" }
 	bold = { family = "FiraCode Nerd Font Mono", style = "Bold" }
 
-[cursor] 
+[cursor]
 	style = { shape = "block", blinking = "Always" }
 	vi_mode_style = { shape = "block", blinking = "Always" }
 

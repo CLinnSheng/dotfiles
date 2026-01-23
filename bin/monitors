@@ -230,8 +230,7 @@ setup_home_single() {
     write_monitor_config "Home single-monitor setup" "${configs[@]}"
     # assign_workspaces "$external" "$laptop"
     monitors=()
-    [[ -n "$monitor_27" ]] && monitors+=("$monitor_27")
-    [[ -n "$monitor_24" ]] && monitors+=("$monitor_24")
+    [[ -n "$external" ]] && monitors+=("$external")
     [[ -n "$laptop" ]] && monitors+=("$laptop")
 
     assign_workspaces "${monitors[@]}"
@@ -241,17 +240,17 @@ setup_home_single() {
 setup_home_dual() {
     log "Configuring Home Setup - Dual Monitor..."
 
-    local laptop left right left_mode laptop_mode right_mode
+    local laptop monitor_27 monitor_24 left_mode laptop_mode right_mode
     local configs=()
 
     laptop="$LAPTOP_DISPLAY"
-    left=$(get_monitor_by_pattern "27")
-    right=$(get_monitor_by_pattern "24")
+    monitor_27=$(get_monitor_by_pattern "27")
+    monitor_24=$(get_monitor_by_pattern "24")
 
     # Left 27" monitor
-    if [[ -n "$left" ]]; then
-        left_mode=$(get_monitor_mode "$left")
-        configs+=("monitor=$left,$left_mode,-1920x0,1")
+    if [[ -n "$monitor_27" ]]; then
+        left_mode=$(get_monitor_mode "$monitor_27")
+        configs+=("monitor=$monitor_27,$left_mode,-1920x0,1")
     fi
 
     # Laptop in center
@@ -259,9 +258,9 @@ setup_home_dual() {
     configs+=("monitor=$laptop,$laptop_mode,0x0,1")
 
     # Right 24" monitor
-    if [[ -n "$right" ]]; then
-        right_mode=$(get_monitor_mode "$right")
-        configs+=("monitor=$right,$right_mode,1920x0,1")
+    if [[ -n "$monitor_24" ]]; then
+        right_mode=$(get_monitor_mode "$monitor_24")
+        configs+=("monitor=$monitor_24,$right_mode,1920x0,1")
     fi
 
     write_monitor_config "Home dual-monitor setup" "${configs[@]}"
@@ -270,7 +269,7 @@ setup_home_dual() {
     [[ -n "$monitor_24" ]] && monitors+=("$monitor_24")
     [[ -n "$laptop" ]] && monitors+=("$laptop")
     assign_workspaces "${monitors[@]}"
-    # assign_workspaces "$left" "$laptop" "$right"
+    # assign_workspaces "$monitor_27" "$laptop" "$monitor_24"
     success "Home Dual Setup Complete"
 }
 
@@ -290,13 +289,13 @@ setup_hostel() {
         configs+=("monitor=$monitor_27,$monitor_27_mode,0x0,1")
     fi
 
-    # 24" monitor (vertical, left)
+    # 24" monitor (vertical, monitor_27)
     if [[ -n "$monitor_24" ]]; then
         monitor_24_mode=$(get_monitor_mode "$monitor_24")
         configs+=("monitor=$monitor_24,$monitor_24_mode,-1080x0,1,transform,3")
     fi
 
-    # Laptop (right)
+    # Laptop (monitor_24)
     laptop_mode=$(get_monitor_mode "$laptop")
     configs+=("monitor=$laptop,$laptop_mode,1920x0,1")
 
@@ -330,7 +329,7 @@ show_menu() {
     echo "Select your setup:"
     echo "1) Home setup - 1 monitor (external on top, laptop below)"
     echo "2) Home setup - 2 monitors (2 external + laptop in center)"
-    echo "3) Hostel setup - 2 monitors (24\" vertical left, 27\" center, laptop right)"
+    echo "3) Hostel setup - 2 monitors (24\" vertical monitor_27, 27\" center, laptop monitor_24)"
     echo "4) Exit"
     echo
 
@@ -364,6 +363,17 @@ main() {
                 ;;
         esac
     done
+
+    log "Reloading Hyprland configuration..."
+    if hyprctl reload; then
+        success "Hyprland reloaded successfully!"
+        # Optional: Send a system notification
+        command -v notify-send >/dev/null && notify-send "Hyprland" "Monitor configuration applied successfully"
+    else
+        error "Failed to reload Hyprland config"
+        exit 1
+    fi
+    # -----------------------
 
     exit 0
 }

@@ -72,7 +72,7 @@ return {
 
 			-- Ensure highlight never reappears by removing it on CursorMoved
 			vim.api.nvim_create_autocmd("BufWritePre", {
-				pattern = { "*.lua", "*.js", "*.ts", "*.py", "*.cpp", "*.c", "*.java", "*.go", "*.rust" },
+				pattern = { "*.lua", "*.js", "*.ts", "*.py", "*.cpp", "*.c", "*.java", "*.go", "*.rust", ".gitignore" },
 				callback = function()
 					require("mini.trailspace").trim()
 				end,

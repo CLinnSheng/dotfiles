@@ -2,7 +2,8 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
+		-- "hrsh7th/cmp-nvim-lsp",
+		"saghen/blink.cmp",
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 	},
 
@@ -74,12 +75,13 @@ return {
 		})
 
 		local lspconfig = require("lspconfig")
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
-		local capabilities = cmp_nvim_lsp.default_capabilities()
+		-- local cmp_nvim_lsp = require("cmp_nvim_lsp")
+		-- local capabilities = cmp_nvim_lsp.default_capabilities()
+		local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 		-- Config lsp servers here
 		-- lua_ls
-		lspconfig.lua_ls.setup({
+		vim.lsp.config.lua_ls = {
 			capabilities = capabilities,
 			settings = {
 				Lua = {
@@ -97,10 +99,10 @@ return {
 					},
 				},
 			},
-		})
+		}
 
 		-- emmet_ls
-		lspconfig.emmet_ls.setup({
+		vim.lsp.config.emmet_ls = {
 			capabilities = capabilities,
 			filetypes = {
 				"html",
@@ -112,62 +114,70 @@ return {
 				"less",
 				"svelte",
 			},
-		})
-
-		-- emmet_language_server
-		lspconfig.emmet_language_server.setup({
-			capabilities = capabilities,
-			filetypes = {
-				"css",
-				"eruby",
-				"html",
-				"javascript",
-				"javascriptreact",
-				"less",
-				"sass",
-				"scss",
-				"pug",
-				"typescriptreact",
-			},
-			init_options = {
-				includeLanguages = {},
-				excludeLanguages = {},
-				extensionsPath = {},
-				preferences = {},
-				showAbbreviationSuggestions = true,
-				showExpandedAbbreviation = "always",
-				showSuggestionsAsSnippets = false,
-				syntaxProfiles = {},
-				variables = {},
-			},
-		})
+		}
 
 		-- denols
-		lspconfig.denols.setup({
-			capabilities = capabilities,
-			root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
-		})
+		-- vim.lsp.config.denols = {
+		-- 	capabilities = capabilities,
+		-- 	root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
+		-- 	single_file_support = false,
+		-- }
 
 		-- ts_ls (replaces tsserver)
-		lspconfig.ts_ls.setup({
+		vim.lsp.config.ts_ls = {
 			capabilities = capabilities,
-			root_dir = function(fname)
-				local util = lspconfig.util
-				return not util.root_pattern("deno.json", "deno.jsonc")(fname)
-					and util.root_pattern("tsconfig.json", "package.json", "jsconfig.json", ".git")(fname)
-			end,
-			single_file_support = false,
+			single_file_support = true,
 			init_options = {
 				preferences = {
 					includeCompletionsWithSnippetText = true,
 					includeCompletionsForImportStatements = true,
 				},
 			},
-		})
+			filetypes = {
+				"javascript",
+				"javascriptreact",
+				"typescript",
+				"typescriptreact",
+			},
+		}
 
-		lspconfig.graphql.setup({
+		vim.lsp.config.graphql = {
 			capabilities = capabilities,
 			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-		})
+		}
+
+		vim.lsp.config.clangd = {
+			capabilities = capabilities,
+			cmd = {
+				"clangd",
+				"--background-index",
+				"--clang-tidy",
+				"--header-insertion=iwyu",
+				"--completion-style=detailed",
+				"--function-arg-placeholders",
+				"--fallback-style=llvm",
+			},
+
+			init_options = {
+				clangdFileStatus = true,
+				completeUnimported = true,
+				usePlaceholders = true,
+			},
+
+			filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+			root_markers = {
+				".git",
+				".clangd",
+				"compile_flags.txt",
+				"compile_commands.json",
+				".clang-tidy",
+				".clang-format",
+			},
+		}
+
+		vim.lsp.config.rust_analyzer = {
+			capabilities = capabilities,
+			filetypes = { "rust", "rs" },
+		}
 	end,
 }

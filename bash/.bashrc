@@ -47,3 +47,4 @@ alias free='free -m' # in MB
 
 # Start starship
 eval "$(starship init bash)"
+. "$HOME/.cargo/env"

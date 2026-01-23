@@ -1,6 +1,6 @@
 return {
 	"stevearc/conform.nvim",
-	event = { "BufReadPre", "BufNewFile" },
+	-- event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		local conform = require("conform")
 
@@ -28,6 +28,10 @@ return {
 						return #diag > 0
 					end,
 				},
+
+				ruff_format = {
+					prepend_args = { "--config", "format.quote-style='single'" },
+				},
 			},
 
 			formatters_by_ft = {
@@ -44,17 +48,18 @@ return {
 				graphql = { "prettier" },
 				liquid = { "prettier" },
 				lua = { "stylua" },
-				python = { "isort", "black" },
+				python = { "isort", "ruff_format" },
 				cpp = { "clang-format" },
 				java = { "google-java-format" },
 				typst = { "prettypst" },
 				sh = { "beautysh" },
+				rust = { "rustfmt" },
 			},
-			format_on_save = {
-				lsp_fallback = true,
-				async = false,
-				timeout_ms = 1000,
-			},
+			-- format_on_save = {
+			-- 	lsp_fallback = true,
+			-- 	async = false,
+			-- 	timeout_ms = 1000,
+			-- },
 		})
 	end,
 }

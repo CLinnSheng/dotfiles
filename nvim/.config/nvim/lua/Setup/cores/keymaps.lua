@@ -11,6 +11,16 @@ keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "moves lines up in visual sele
 keymap.set("v", ">", ">gv", opts)
 keymap.set("v", "<", "<gv", opts)
 
+keymap.set({ "n", "v" }, "<leader>w", "<Cmd>update<CR>", { desc = "Write the current buffer" })
+keymap.set({ "n", "v" }, "<leader>q", "<Cmd>:quit<CR>", { desc = "Quit the current buffer" })
+
+keymap.set("n", "<leader>fm", function()
+	require("conform").format({
+		async = true,
+		lsp_fallback = true,
+	})
+end, { desc = "Format buffer" })
+
 -- keymap.set("n", "<C-a>", "gg<S-v>G")
 
 keymap.set(
@@ -19,6 +29,10 @@ keymap.set(
 	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
 	{ desc = "Replace word cursor is on globally" }
 )
+
+-- navigate around references
+vim.keymap.set("n", "<C-n>", ":cnext<CR>", { silent = true })
+vim.keymap.set("n", "<C-p>", ":cprev<CR>", { silent = true })
 
 -- Change the permission of the current file to executable
 keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "makes file executable" })
@@ -60,3 +74,5 @@ keymap.set("n", "<leader>ld", function()
 		underline = isLspDiagnosticsVisible,
 	})
 end, { desc = "Toggle LSP diagnostics" })
+
+keymap.set("n", "<leader>gD", ":diffoff! | only<CR>", { desc = "Turn off diff mode" })
