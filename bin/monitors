@@ -240,27 +240,35 @@ setup_home_single() {
 setup_home_dual() {
     log "Configuring Home Setup - Dual Monitor..."
 
-    local laptop monitor_27 monitor_24 left_mode laptop_mode right_mode
+    local laptop monitor_27 monitor_24 monitor_27_mode laptop_mode monitor_24_mode
     local configs=()
 
     laptop="$LAPTOP_DISPLAY"
     monitor_27=$(get_monitor_by_pattern "27")
     monitor_24=$(get_monitor_by_pattern "24")
 
-    # Left 27" monitor
+    local monitor_27_width=2560
+    local monitor_27_height=1440
+
+    # 27" monitor (horizontal, main, top-left)
     if [[ -n "$monitor_27" ]]; then
-        left_mode=$(get_monitor_mode "$monitor_27")
-        configs+=("monitor=$monitor_27,$left_mode,-1920x0,1")
+        monitor_27_mode=$(get_monitor_mode "$monitor_27")
+        local monitor_27_res
+        monitor_27_res=$(echo "$monitor_27_mode" | cut -d'@' -f1)
+        monitor_27_width=$(echo "$monitor_27_res" | cut -d'x' -f1)
+        monitor_27_height=$(echo "$monitor_27_res" | cut -d'x' -f2)
+
+        configs+=("monitor=$monitor_27,$monitor_27_mode,0x0,1")
     fi
 
-    # Laptop in center
+    # Laptop at the bottom of the 27" monitor
     laptop_mode=$(get_monitor_mode "$laptop")
-    configs+=("monitor=$laptop,$laptop_mode,0x0,1")
+    configs+=("monitor=$laptop,$laptop_mode,0x${monitor_27_height},1")
 
-    # Right 24" monitor
+    # Vertical 24" monitor on the right of the 27" monitor
     if [[ -n "$monitor_24" ]]; then
-        right_mode=$(get_monitor_mode "$monitor_24")
-        configs+=("monitor=$monitor_24,$right_mode,1920x0,1")
+        monitor_24_mode=$(get_monitor_mode "$monitor_24")
+        configs+=("monitor=$monitor_24,$monitor_24_mode,${monitor_27_width}x0,1,transform,1")
     fi
 
     write_monitor_config "Home dual-monitor setup" "${configs[@]}"
@@ -328,7 +336,7 @@ show_menu() {
     echo
     echo "Select your setup:"
     echo "1) Home setup - 1 monitor (external on top, laptop below)"
-    echo "2) Home setup - 2 monitors (2 external + laptop in center)"
+    echo "2) Home setup - 2 monitors (27\" main, laptop below, 24\" vertical on right)"
     echo "3) Hostel setup - 2 monitors (24\" vertical monitor_27, 27\" center, laptop monitor_24)"
     echo "4) Exit"
     echo
