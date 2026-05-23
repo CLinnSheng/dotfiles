@@ -11,9 +11,6 @@ vim.keymap.set({ "n", "v" }, "D", [["_D]], { desc = "Delete whole line without y
 vim.keymap.set({ "n", "v" }, "c", [["_c]], { desc = "Change without yanking" })
 vim.keymap.set({ "n", "v" }, "C", [["_C]], { desc = "Change to end of line without yanking" })
 
--- Delete a character without overwriting your paste register
-vim.keymap.set({ "n", "v" }, "x", [["_x]], { desc = "Delete character without yanking" })
-
 vim.keymap.set("i", "<C-c>", "<Esc>")
 vim.keymap.set("n", "<C-c>", ":nohl<CR>", { desc = "Clear search highlights", silent = true })
 
@@ -64,11 +61,24 @@ vim.keymap.set("n", "<leader>u", function()
     require("undotree").open()
 end, { desc = "Toggle Builtin Undotree" })
 
--- Fix Pasting from system clipboard
-vim.keymap.set("n", "V", "0vg_", { noremap = true, desc = "Select entire line without newline" })
-
 -- Save
 vim.keymap.set('n', '<leader>w', ':w<CR>', { noremap = true, silent = true, desc = "Save file" })
 
 -- Quit
 vim.keymap.set('n', '<leader>q', ':q<CR>', { noremap = true, silent = true, desc = "Quit" })
+
+-- Fix pasting from system clipboard and without replacing the content saved in register with the line getting replaced
+vim.keymap.set('x', 'p', function()
+    -- Get the register you are pasting from
+    local reg = vim.v.register
+    local reg_text = vim.fn.getreg(reg)
+
+    -- Check if you are currently in Visual Line mode ('V')
+    if vim.fn.mode() == 'V' then
+        -- Force the register to behave as a Linewise block
+        vim.fn.setreg(reg, reg_text, 'V')
+    end
+
+    -- Return Capital P (pastes without yanking the deleted text into your clipboard)
+    return 'P'
+end, { expr = true, noremap = true, desc = "Smart paste (keeps register)" })

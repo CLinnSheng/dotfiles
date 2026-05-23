@@ -19,7 +19,7 @@ vim.opt.wrap = false
 -- vim.opt.breakindent = true -> Only use it if set `wrap`
 
 -- Sync system clipboard with Neovim registers
-vim.opt.clipboard:append("unnamedplus")
+vim.opt.clipboard = "unnamedplus"
 
 vim.opt.inccommand = "split"
 
