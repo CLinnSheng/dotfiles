@@ -77,7 +77,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 -- Database Config
 vim.g.dbs = {
-    DevDB = "mysql://linnsheng:2KZFwWawGYZO4Rnb@devdb.perrytec.com/",
 }
 
 
