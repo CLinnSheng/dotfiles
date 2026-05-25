@@ -47,7 +47,7 @@ vim.opt.colorcolumn = "0"
 vim.opt.signcolumn = "yes"
 
 vim.opt.termguicolors = true
-vim.o.cmdheight = 0
+vim.o.cmdheight = 1
 
 -- Spell Check
 vim.api.nvim_create_autocmd("FileType", {
