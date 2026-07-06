@@ -45,6 +45,10 @@
       "rev": "c375ea503646fe8393593b5fb8a40406eaa437b2",
       "src": "https://github.com/nvim-mini/mini.surround"
     },
+    "monochrome.nvim": {
+      "rev": "2de78d9688ea4a177bcd9be554ab9192337d35ff",
+      "src": "https://github.com/kdheepak/monochrome.nvim"
+    },
     "nvim-autopairs": {
       "rev": "7b9923abad60b903ece7c52940e1321d39eccc79",
       "src": "https://github.com/windwp/nvim-autopairs"
@@ -73,6 +77,14 @@
       "rev": "629eb9533ec989d9d5c6cab8f3ad5372422c24e0",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
+    "splitjoin.nvim": {
+      "rev": "371b5df7c9cef92225599e75ebc8c20434e1f9be",
+      "src": "https://github.com/bennypowers/splitjoin.nvim"
+    },
+    "stay-centered.nvim": {
+      "rev": "e1a63ccaf2584e97c0ef8e64f9654c9a80d983f6",
+      "src": "https://github.com/arnamak/stay-centered.nvim"
+    },
     "tiny-inline-diagnostic.nvim": {
       "rev": "147af4e49f51dd48f41972de26552872b8ba7b25",
       "src": "https://github.com/rachartier/tiny-inline-diagnostic.nvim"
@@ -100,6 +112,10 @@
     "vim-tmux-navigator": {
       "rev": "e41c431a0c7b7388ae7ba341f01a0d217eb3a432",
       "src": "https://github.com/christoomey/vim-tmux-navigator"
+    },
+    "xls-viewer.nvim": {
+      "rev": "e357094cf5abf1a4ac41aabeaf4239d69ed02bf6",
+      "src": "https://github.com/Beargruug/xls-viewer.nvim"
     }
   }
 }

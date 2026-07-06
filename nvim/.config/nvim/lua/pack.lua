@@ -1,21 +1,3 @@
--- Build hook for markdown-preview.nvim
-vim.api.nvim_create_autocmd("PackChanged", {
-    callback = function(ev)
-        local name, kind = ev.data.spec.name, ev.data.kind
-        if name == "markdown-preview.nvim" and (kind == "install" or kind == "update") then
-            local app_dir = ev.data.path .. "/app"
-            vim.notify("Building markdown-preview.nvim...", vim.log.levels.INFO)
-            vim.system({ "npm", "install" }, { cwd = app_dir }, function(obj)
-                if obj.code == 0 then
-                    vim.notify("Successfully built markdown-preview.nvim!", vim.log.levels.INFO)
-                else
-                    vim.notify("Failed to build markdown-preview.nvim: " .. (obj.stderr or ""), vim.log.levels.ERROR)
-                end
-            end)
-        end
-    end,
-})
-
 vim.pack.add({
     "https://github.com/bluz71/vim-moonfly-colors",
     "https://github.com/stevearc/oil.nvim",
@@ -45,7 +27,9 @@ vim.pack.add({
     "https://github.com/chomosuke/typst-preview.nvim",
     "https://github.com/windwp/nvim-ts-autotag",
     "https://github.com/christoomey/vim-tmux-navigator",
-    "https://github.com/j-hui/fidget.nvim"
+    "https://github.com/j-hui/fidget.nvim",
+    "https://github.com/bennypowers/splitjoin.nvim",
+    "https://github.com/Beargruug/xls-viewer.nvim",
 })
 
 -- Icons
@@ -77,7 +61,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 -- Database Config
 vim.g.dbs = {
 }
-
+vim.g.db_ui_auto_execute_table_helpers = 1
 
 vim.keymap.set("n", "<leader>db", "<CMD>DBUIToggle<CR>", { desc = "Toggle Dadbod UI Sidebar" })
 
@@ -100,17 +84,17 @@ end, { desc = "FZF Live Grep" })
 --     require("fzf-lua").buffers()
 -- end, { desc = "FZF Buffers" })
 vim.keymap.set("n", "<leader>fh", function()
-    require("fzf-lua").help_tags()
+    require("fzf-lua").manpages()
 end, { desc = "FZF Help Tags" })
-vim.keymap.set("n", "<leader>fx", function()
-    require("fzf-lua").diagnostics_document()
-end, { desc = "FZF Diagnostics Document" })
 vim.keymap.set("n", "<leader>fX", function()
     require("fzf-lua").diagnostics_workspace()
 end, { desc = "FZF Diagnostics Workspace" })
 vim.keymap.set("n", "<leader>fk", function()
     require("fzf-lua").keymaps()
 end, { desc = "FZF Keymaps" })
+vim.keymap.set("n", "<leader>s", function()
+    require("fzf-lua").spell_suggest()
+end, { desc = "Spelling Suggestions" })
 
 -- Git Signs
 require("gitsigns").setup({
@@ -124,8 +108,22 @@ require("gitsigns").setup({
     current_line_blame = false,
 })
 vim.keymap.set("n", "<leader>gb", function()
-    require("gitsigns").blame_line()
+    require("gitsigns").blame_line({ full = true })
 end, { desc = "Toggle inline blame" })
+vim.keymap.set("n", "<leader>gB", function()
+    -- Check if a blame window is already open, if so, close it
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if vim.bo[buf].filetype == "gitsigns-blame" then
+            vim.api.nvim_win_close(win, true)
+            return
+        end
+    end
+
+    -- If no blame window was found, open it
+    require("gitsigns").blame()
+end, { desc = "Toggle Git blame full file" })
+
 vim.keymap.set("n", "<leader>gd", function()
     require("gitsigns").diffthis()
 end, { desc = "Diff this" })
@@ -283,12 +281,13 @@ require("blink.cmp").setup({
                 auto_insert = false,
             },
         },
-
         ghost_text = {
-            enabled = true,
+            -- enabled = true,
+            enabled = false,
+            show_with_menu = false,
         },
-
         menu = {
+            auto_show = true,
             border = "rounded",
         },
         documentation = {
@@ -297,6 +296,11 @@ require("blink.cmp").setup({
                 border = "rounded",
             },
         },
+        -- accept = {
+        --     auto_brackets = {
+        --         enabled = true
+        --     }
+        -- }
     },
 
     cmdline = {
@@ -333,3 +337,19 @@ require("crates").setup({
 
 -- Fidget
 require("fidget").setup({})
+
+-- Split Join
+vim.keymap.set("n", "<leader>ss", function()
+    require("splitjoin").split()
+end, {
+    desc = "Split construct into multiple lines",
+})
+
+vim.keymap.set("n", "<leader>sj", function()
+    require("splitjoin").join()
+end, { desc = "Join construct into single line" })
+
+-- Xls viewer
+require("xls-viewer").setup({
+    python_cmd = vim.fn.expand("~/.local/share/nvim-python/bin/python"),
+})

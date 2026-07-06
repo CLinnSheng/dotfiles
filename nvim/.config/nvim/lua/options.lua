@@ -3,7 +3,7 @@ vim.g.netrw_banner = 0
 vim.opt.nu = true
 vim.opt.rnu = true
 
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 999
 
 vim.o.winborder = "single"
 
@@ -75,3 +75,4 @@ vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 99
+vim.opt.foldenable = true

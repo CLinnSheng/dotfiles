@@ -82,3 +82,8 @@ vim.keymap.set('x', 'p', function()
     -- Return Capital P (pastes without yanking the deleted text into your clipboard)
     return 'P'
 end, { expr = true, noremap = true, desc = "Smart paste (keeps register)" })
+
+vim.keymap.set("n", "<leader>rs", function()
+    vim.cmd("lsp restart")
+    vim.notify("LSP restarted", vim.log.levels.INFO)
+end, { desc = "Restart LSP" })

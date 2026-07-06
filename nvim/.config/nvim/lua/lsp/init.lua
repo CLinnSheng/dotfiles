@@ -11,16 +11,19 @@ require("lsp.html")
 
 -- Get capabilities from blink.cmp
 local capabilities = require("blink.cmp").get_lsp_capabilities()
+vim.lsp.config('*', {
+    capabilities = capabilities
+})
 
 -- Apply capabilities to all configured servers
 local servers = { "lua_ls", "clangd", "gopls", "rust_analyzer", "ruff", "pyright", "bashls", "yamlls", "ts_ls", "html" }
-for _, server in ipairs(servers) do
-    vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, {
-        capabilities = capabilities,
-    })
-end
-
 vim.lsp.enable(servers)
+-- for _, server in ipairs(servers) do
+--     vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, {
+--         capabilities = capabilities,
+--     })
+-- end
+
 
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
@@ -55,11 +58,22 @@ vim.diagnostic.config({
         text = signs,
     },
     virtual_text = false,
+    virtual_lines = false,
+    underline = true,
     update_in_insert = false,
-    severity_sort = true,
+    float = {
+        focusable = true,
+        style = "minimal",
+        border = "rounded",
+        source = true
+    }
 })
 
--- Inline Diagnostics
+vim.keymap.set("n", "<leader>ld", function()
+    require("tiny-inline-diagnostic").toggle()
+end, { desc = "Toggle inline diagnostics" })
+
+-- Inline Diagnostics (end-of-line, wraps long messages)
 require("tiny-inline-diagnostic").setup({
     preset = "modern",
     options = {
