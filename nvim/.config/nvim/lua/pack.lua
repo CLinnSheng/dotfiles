@@ -60,6 +60,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 -- Database Config
 vim.g.dbs = {
+    {
+        name = "DevDB",
+        url = "mysql://linnsheng:2KZFwWawGYZO4Rnb@devdb.perrytec.com"
+    }
 }
 vim.g.db_ui_auto_execute_table_helpers = 1
 

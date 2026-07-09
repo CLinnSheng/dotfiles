@@ -6,8 +6,8 @@
 [[ $- != *i* ]] && return
 
 # alias
-alias ls='ls --color=auto -lS'
-alias ll='ls --color=auto -lt'
+alias ls='ls --color=auto -lSh'
+alias ll='ls --color=auto -lth'
 alias grep='grep --color=auto'
 alias image='nsxiv'
 
@@ -39,6 +39,12 @@ bind "set completion-ignore-case on"
 
 # flags for some command
 alias free='free -m' # in MB
+
+alias gc='clean_branch'
+
+# fzf
+[ -f /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
+[ -f /usr/share/fzf/completion.bash ] && source /usr/share/fzf/completion.bash
 
 # run fastfetch command whenever open terminal
 # if [ -f /usr/bin/fastfetch ]; then
